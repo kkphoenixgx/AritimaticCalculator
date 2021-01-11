@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="ca.ubc.jquery" 
+   name="JQuery"
+   version="3.1.1"
+   provider-name="University of British Columbia"
+   class="ca.ubc.jquery.JQueryPlugin">
+
+   <runtime>
+      <library name="lib/tyruba.jar"/>
+      <library name="jquery.jar"/>
+      <library name="lib/asm-1.4.3.jar"/>
+      <library name="lib/jakarta-regexp-1.2.jar"/>
+      <library name="lib/log4j-1.2.7.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.core.boot"/>
+   </requires>
+
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="JQuery"
+            icon="icons/QueryView.gif"
+            category="ca.ubc.jquery"
+            class="ca.ubc.jquery.gui.JQueryView"
+            id="ca.ubc.jquery.gui.JQueryView">
+      </view>
+      <category
+            name="JQuery"
+            id="ca.ubc.jquery">
+      </category>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view
+               relative="org.eclipse.ui.views.ResourceNavigator"
+               relationship="stack"
+               id="ca.ubc.jquery.gui.JQueryView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="JQuery"
+            class="ca.ubc.jquery.preferences.JQueryPreferencePage"
+            id="ca.ubc.jquery.preferences.JQueryPreferencePage">
+      </page>
+   </extension>
+
+	<!-- adding JQuery actions to context menus outside of the plugin -->
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="VSF Editor"
+            icon="icons/Vsf.gif"
+            contributorClass="ca.ubc.jquery.vsf.editor.JavaActionContributor"
+            class="ca.ubc.jquery.vsf.editor.VsfEditor"
+            id="ca.ubc.jquery.vsf.editor.VsfEditor">
+      </editor>
+   </extension>
+   
+  <extension point="org.eclipse.ui.popupMenus">
+ 	<objectContribution objectClass="org.eclipse.jdt.core.IMember" 
+ 						id="ca.ubc.jquery.queryHere">
+  		<action label="Query here"
+  				class="ca.ubc.jquery.gui.QueryHereAction" 
+  				menubarPath="group.jquery" 
+  				id="ca.ubc.jquery.queryHereAction.browsers"
+	            icon="icons/QueryView.gif" />
+  	</objectContribution>
+  </extension>
+  
+  
+  <!-- uncomment to get a toolbar item for JQuery -->
+<!--  <extension point="org.eclipse.ui.editorActions">
+ 	<editorContribution targetID="org.eclipse.jdt.ui.CompilationUnitEditor" 
+ 						id="ca.ubc.jquery.queryHere">
+  		<action label="Query here"
+  				class="ca.ubc.jquery.gui.QueryHereAction" 
+  				toolbarPath="group.jquery" 
+  				id="ca.ubc.jquery.queryHereAction.toolbar"
+	            tooltip="Query Here"
+	            icon="icons/QueryView.gif" />
+  	</editorContribution>
+  </extension> -->
+  
+	<extension point="org.eclipse.ui.popupMenus">
+	  <viewerContribution 
+	     targetID="#CompilationUnitEditorContext" 
+	     id="ca.ubc.cs.println.popupMenu">
+	
+		  <action 
+		      label="Query Here" 
+		      icon="icons/QueryView.gif"    
+		      class="ca.ubc.jquery.gui.QueryHereAction" 
+		      menubarPath="group.jquery" 
+		      id="ca.ubc.jquery.queryHereAction.editors">
+		   </action>
+	
+	   </viewerContribution>
+  </extension>
+   
+</plugin>

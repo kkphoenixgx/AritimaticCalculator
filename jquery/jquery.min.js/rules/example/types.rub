@@ -1,0 +1,7 @@
+//This file is included by type_declarations.rub
+
+
+TYPE JDocument AS String
+TYPE JLine AS String
+TYPE JWord AS String
+TYPE JElement = JDocument | JLine | JWord 

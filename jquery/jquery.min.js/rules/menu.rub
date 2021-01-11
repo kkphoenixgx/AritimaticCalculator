@@ -1,0 +1,345 @@
+//
+// This user-configurable file defines rules and menuItems that JQuery
+//JQuery uses to populate the context menus (pop-up menus).
+// etc.
+
+// The configuration interface is defined/described in
+// the file "user_config.rub".
+
+// --------------------------------------------------------------------
+// The new form for a menuItem is as follows:
+//
+//    menuItem(?this, labelString, queryString, [varsString0, varsString1, ...]) :- applicabilityExp).
+// --------------------------------------------------------------------
+
+// --------------------------------------------------------------------
+// Members->Constructors
+// --------------------------------------------------------------------
+menuItem(?this, ["Members","Constructors"], "constructor(?this,?Cons)", ["?Cons"]) :-
+    class(?this).
+
+// --------------------------------------------------------------------
+// Members->Methods
+// --------------------------------------------------------------------
+menuItem(?this, ["Members","Methods"] , "child(?this,?M), method(?M)", ["?M"]) :-
+    Type(?this).
+
+menuItem(?this, ["Members","Methods...", ?name], {child(??this,??M), method(??M),name(??M,?name)}, ["?M"], ):-
+    Type(?this), method(?this, ?M), name(?M, ?name).
+
+// --------------------------------------------------------------------
+// Members->Fields
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Members","Fields"] , "child(?this,?F), field(?F)", ["?F"]) :-
+    Type(?this).
+
+// --------------------------------------------------------------------
+// Members->Initializers
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Members","Initializers"] , "child(?this,?I), initializer(?I)", ["?I"]) :-
+    Type(?this).
+
+// --------------------------------------------------------------------
+// Throws
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Signature","Throws"] , "throws(?this,?E)", ["?E"]) :-
+    Callable(?this).
+
+// --------------------------------------------------------------------
+// Returns
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Signature","Returns"] , "returns(?this, ?RType)", ["?RType"]) :-
+    method(?this).
+
+// --------------------------------------------------------------------
+// Signature->Arguments
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Signature","Arguments"] , "arg(?this, ?ArgType)", ["?ArgType"]) :-
+    Callable(?this).
+
+// --------------------------------------------------------------------
+// Signature->Modifiers
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Signature","Modifiers"] , "modifier(?this, ?Mod)", ["?Mod"]) :-
+    Callable(?this).
+
+
+// --------------------------------------------------------------------
+// Signature->Signature
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Signature","Signature"] , "signature(?this, ?Sig)", ["?Sig"]) :-
+    Callable(?this).
+
+// --------------------------------------------------------------------
+// References Methods
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Calls","Outgoing Calls"], "calls(?this, ?M2, ?Ref), child(?C,?M2)", ["?C", "?M2", "?Ref"]):-
+    Block(?this).
+
+menuItem(?this, ["Calls","Outgoing Calls...", ?name], {calls(??this, ??M2, ??Ref),name(??M2,?name),child(??C,??M2)}, ["?C", "?M2", "?Ref"], ):-
+    Block(?this), calls(?this, ?M, ?), name(?M, ?name).
+
+menuItem(?this, ["Calls","Incoming Calls"] , "(equals(?this,?target) ; overrides(?target,?this)),polyCalls(?M2, ?target, ?Ref),child(?C2,?M2)", ["?C2","?M2","?Ref"]) :-
+    Callable(?this).
+
+menuItem(?this, ["Calls","Incoming Calls...", ?name], {polyCalls(??M2, ??this, ??Ref),name(??M2,?name),child(??C,??M2)}, ["?C", "?M2", "?Ref"], ):-
+    Callable(?this), polyCalls(?M, ?this, ?), name(?M, ?name).
+
+
+
+
+menuItem(?this,
+        ["Calls", "Creates"],
+        "creator(?Cted, ?this, ?Ref), package(?Cted,?Pkg)",
+         ["?Pkg", "?Cted", "?Ref"]) :-
+   Block(?this).
+
+
+// --------------------------------------------------------------------
+// Subclasses
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Inheritance","Subclasses"] , "extends(?S, ?this)", ["?S"]) :-
+    class(?this).
+
+// --------------------------------------------------------------------
+// Superclass
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Inheritance","Superclass"], "extends(?this, ?Super)", ["?Super"]) :-
+    class(?this).
+
+// --------------------------------------------------------------------
+// Implements
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Inheritance","Implements Interfaces"] , "implements(?this, ?I)", ["?I"]) :-
+    class(?this).
+
+// --------------------------------------------------------------------
+// Implemented by
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Inheritance","Implemented by"] , "implements(?C, ?this)", ["?C"]) :-
+    interface(?this).
+
+// --------------------------------------------------------------------
+// Subinterface
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Inheritance", "Subinterfaces"] ,  "extends(?Sub, ?this)", ["?Sub"]) :-
+    interface(?this).
+
+// --------------------------------------------------------------------
+// Superinterfaces
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Inheritance","Super-Interfaces"] , "extends(?this, ?S)", ["?S"]) :-
+    interface(?this).
+
+
+// --------------------------------------------------------------------
+// Package -> Types
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Top-level Types"],"child(?this,?CU), child(?CU,?T),Type(?T)", ["?T"]) :-
+    package(?this).
+
+menuItem(?this, ["Types...",?name], {child(??this,??CU), child(??CU,??T), name(??T, ?name)}, ["?T"], ):-
+    package(?this), child(?this,?CU), child(?CU,?T),name(?T, ?name),Type(?T).
+
+
+// --------------------------------------------------------------------
+// Package -> Classes
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Top-level Classes"] , "child(?this,?CU), child(?CU,?T), class(?T)", ["?T"]) :-
+    package(?this).
+
+// --------------------------------------------------------------------
+// Package -> Interfaces
+// --------------------------------------------------------------------
+
+menuItem(?this, ["Top-level Interfaces"] , "child(?this,?CU),child(?CU,?T),interface(?T)", ["?T"]) :-
+    package(?this).
+
+
+// --------------------------------------------------------------------
+// ITEMS MOVED FROM "kris-eclipse.rub"
+// --------------------------------------------------------------------
+
+
+/////////////////////////////////////////////////////////////////
+
+menuItem(?this, ["Java Structure","Contained In"],"child(?P,?this)", ["?P"]) :-
+    Element(?this), NOT(package(?this)).
+
+menuItem(?this, ["Java Structure", "Contains"], "child(?this,?C)", ["?C"]) :-
+    Element(?this).
+
+menuItem(?this,["Java Structure","My Structure"], "viewFromHere(?this,?ViewJavaStructure)", ["?ViewJavaStructure"]) :-
+    Element(?this).
+
+////////////////////////////////////////////////////////////////
+
+menuItem(?this, ["Inheritance","Subtypes+"], "type(?this),subtype+(?this,?SubT)", ["?SubT"]) :-
+    Type(?this).
+
+menuItem(?this, ["Inheritance","Supertypes+"], "type(?this),subtype+(?SuperT,?this)", ["?SuperT"]) :-
+    Type(?this).
+
+////////////////////////////////////////////////////////////////
+
+
+menuItem(?this, ["Inheritance","Inherited Fields"], "inheritedField(?this,?f,?Sup)", ["?Sup", "?f"]) :-
+    Type(?this).
+
+////////////////////////////////////////////////////////////////
+
+menuItem(?this, ["Inheritance","Inherited Methods"], "inheritedMethod(?this,?m,?Super)", ["?Super", "?m"]) :-
+    Type(?this).
+
+////////////////////////////////////////////////////////////////
+hierarchy :: =Type,[=Type]
+MODES
+    (B,F) IS NONDET
+END
+
+hierarchy(?C1,[]) :- NOT(subtype(?C1,?)).
+hierarchy(?C1,[?C2|?R]) :- subtype(?C1,?C2),hierarchy(?C2,?R).
+
+
+menuItem(?this, ["Inheritance","Hierarchy"], "hierarchy(?this,?H)", ["?H"]) :-
+    Type(?this).
+
+////////////////////////////////////////////////////////////////
+inv_hierarchy :: =Type,[=Type]
+MODES
+    (B,F) IS NONDET
+END
+
+inv_hierarchy(?T, []) :- NOT(subtype(?,?T)).
+inv_hierarchy(?Sub,[?Super|?R]) :- subtype(?Super,?Sub), inv_hierarchy(?Super,?R).
+
+menuItem(?this, ["Inheritance", "Inverted Hierarchy"], "inv_hierarchy(?this,?IH)", ["?IH"]) :-
+    Type(?this).
+
+////////////////////////////////////////////////////////////////
+
+menuItem(?this, ["Signature", "Methods Like This"], "likeThis(?this,?M2), child(?C2,?M2)", ["?C2","?M2"]) :-
+    method(?this).
+
+////////////////////////////////////////////////////////////////
+
+menuItem(?this,["Inheritance", "Overridden by"],"overrides(?rides,?this),child(?C,?rides),package(?C,?P)", ["?P","?C","?rides"]) :-
+    inheritableMethod(?this).
+
+menuItem(?this,["Inheritance", "Override"], "overrides(?this,?ridden),child(?C,?ridden),package(?C,?P)",["?P","?C","?ridden"]) :-
+    inheritableMethod(?this).
+
+menuItem(?this,["Inheritance", "Inherited by"],
+    "child(?thisC,?this),inheritedMethod(?C,?this,?thisC)", ["?C"]) :-
+    inheritableMethod(?this).
+
+
+///////////////////////////////////////////////////////////////
+
+menuItem(?this,
+        ["Creators"],
+        "subtype*(?this,?Cted),creator(?Cted, ?CtorM, ?Ref), child(?CtorCls,?CtorM), package(?CtorCls,?CtorP)",
+        ["?CtorP", "?CtorCls","?CtorM", "?Ref"]) :-
+    class(?this).
+
+
+//menuItem(?O, ["Subtype Creators"] , menu_subtypeCreators) :-
+//  type(?O).
+//menu_subtypeCreators(?Cted, [?CtorP, ?CtorCls,?CtorM, ?Ref]) :-
+//   subtype*(?Cted,?STCted),
+//  creator(?STCted, ?CtorM, ?Ref),child(?CtorCls,?CtorM),
+//  package(?CtorCls,?CtorP).
+
+
+///////////////////////////////////////////////////////////////
+
+menuItem(?this, ["Type of Field"] , "type(?this, ?T)", ["?T"]) :-
+    field(?this).
+
+///////////////////////////////////////////////////////////////////////////
+// FIELD READS  (including, for classes, reads occuring in child methods)
+///////////////////////////////////////////////////////////////////////////
+menuItem(?this, ["Field Accesses", "Reads/Writes Fields"], "accesses(?this,?f,?Loc),child(?T,?f)", ["?T","?f","?Loc"]) :- Block(?this).
+menuItem(?this, ["Field Accesses", "Writes Fields"],   "writes(?this,?f,?Loc),child(?T,?f)",   ["?T","?f","?Loc"]) :- Block(?this).
+menuItem(?this, ["Field Accesses", "Reads Fields"],    "reads(?this,?f,?Loc),child(?T,?f)",    ["?T","?f","?Loc"]) :- Block(?this).
+
+menuItem(?this, ["Read/Written by"], "accesses(?X,?this,?Loc),child(?C,?X)", ["?C","?X","?Loc"]) :- field(?this).
+menuItem(?this, ["Written by"],  "writes(?X,?this,?Loc),child(?C,?X)",   ["?C","?X","?Loc"]) :- field(?this).
+menuItem(?this, ["Read by"],     "reads(?X,?this,?Loc),child(?C,?X)",    ["?C","?X","?Loc"]) :- field(?this).
+
+// Notes to Ryan... I started looking at the above because they didn't work.
+//   a)  You wrote: including, for classes, reads occuring in child methods
+//      Kris >  not good enough, there could also be reads in other places than the methods!
+//   b) If you want to make it work... why not make it a separate rule / query for classes (somewhat) like this:
+//       menuItem(?this, ["Field Accesses", "Reads Fields"], "child(?this,?m),reads(?m,?f,?Loc),child(?T,?f)", ["?T","?f","?Loc"]) :- class(?this).
+//    There is no need to try and twist the query for fields into the one for classes.
+//    It's really not necessary that because they have the same menu label they should also have the same query.
+
+
+////////////////////////////////////
+//Code Marker Sub-Queries
+////////////////////////////////////
+menuItem(?this, ["Markers", "Complier Warnings"],"child+(?this,?W),warning(?W)", ["?W"]) :- Element(?this),NOT(Marker(?this)).
+menuItem(?this, ["Markers", "Complier Errors"],"child+(?this,?W),error(?W)", ["?W"]) :- Element(?this),NOT(Marker(?this)).
+menuItem(?this, ["Markers", "Bookmarks"],"child+(?this,?B),bookmark(?B)", ["?B"]) :- Element(?this),NOT(Marker(?this)).
+menuItem(?this, ["Markers", "Tasks"],"child+(?this,?B),task(?B),priority(?B,?P)", ["?P","?B"]) :- Element(?this),NOT(Marker(?this)).
+////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////
+// METHOD HIERARCHY
+///////////////////////////////////////////////////////////////////////
+// [previously] Disabled due to tyruba issue with intersection of environments.
+//  see tyRuBa.tests.TypeTest.java:testUserDefinedListType
+
+methodizeHierarchy :: String, [Type], [Element]
+MODES
+    (B,B,F) REALLY IS DET
+END
+
+methodizeHierarchy(?sig,[],[]) :- String(?sig).
+
+methodizeHierarchy(?sig,[?C1|?CH],?mH) :-
+   Type(?C1),
+   NOT( EXISTS ?m : method(?C1,?m), signature(?m,?sig) ),
+   methodizeHierarchy(?sig,?CH,?mH).
+
+methodizeHierarchy(?sig,[?C1|?CH],[?C1,?m|?mH]) :-
+   method(?C1,?m), signature(?m,?sig),
+   methodizeHierarchy(?sig,?CH,?mH).
+
+
+
+methodHierarchy :: Method, [Element]
+MODES
+    (B,F) IS NONDET
+END
+methodHierarchy(?m,?mH) :- inheritableMethod(?m),
+   child(?C,?m), type(?C),
+   signature(?m,?sig),hierarchy(?C, ?CH),
+   methodizeHierarchy(?sig,?CH,?mH).
+
+
+
+
+menuItem(?this,["Inheritance", "Method Hierarchy"],
+"methodHierarchy(?this,?H)", ["?H"]) :-
+    inheritableMethod(?this),child(?T,?this),
+    name(?this,?name),name(?T,?Tname).
+
+//#include "example/menu.rub"

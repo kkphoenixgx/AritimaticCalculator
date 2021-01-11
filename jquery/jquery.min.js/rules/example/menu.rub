@@ -1,0 +1,17 @@
+//This file is include by menu.rub
+
+
+topQuery("JDocument Browser", "jDocument(?X),jLine(?X,?Y),jWord(?Y,?Z)",["?X","?Y","?Z"]).
+topQuery("JDocument Word Browser", "jWord(?X),jName(?X,?N),jWord(?L,?X),jLine(?D,?L)",["?N","?X"]).
+
+menuItem(?this, ["JDocument","Contained lines"],"jLine(?this,?line)",["?line"]) :- JDocument(?this).
+menuItem(?this, ["JDocument","Contained words"],"jLine(?this,?line),jWord(?line,?word)",["?word"]) :- JDocument(?this).
+
+menuItem(?this, ["JDocument","Containing document"],"jLine(?doc,?this)",["?doc"]) :- JLine(?this).
+menuItem(?this, ["JDocument","Contained words"],"jWord(?this,?word)",["?word"]) :- JLine(?this).
+menuItem(?this, ["JDocument","Lines in same position in other documents"],"jLine(?line),jLineNumber(?this,?n),jLineNumber(?line,?n),NOT(equals(?line,?this))",["?line"]) :- JLine(?this).
+
+menuItem(?this, ["JDocument","Containing line"],"jWord(?line,?this)",["?line"]) :- JWord(?this).
+menuItem(?this, ["JDocument","Containing document"],"jWord(?line,?this),jLine(?doc,?line)",["?doc"]) :- JWord(?this).
+menuItem(?this, ["JDocument","Words like this"],"jWord(?x),jName(?x,?n),jName(?this,?n),jWord(?line,?x),NOT(equals(?this,?x))",["?line","?x"]) :- JWord(?this).
+menuItem(?this, ["JDocument","Words in same position in other lines/documents"],"jWord(?x),jWordNumber(?x,?n),jWordNumber(?this,?n),jWord(?line,?x),NOT(equals(?this,?x))",["?line","?x"]) :- JWord(?this).

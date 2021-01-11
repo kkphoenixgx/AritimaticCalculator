@@ -1,0 +1,36 @@
+//
+// Call this query to run all tests:
+//
+// :- test(?msg,?moreInfoList).
+
+
+test :: =String, [Object]
+MODES
+   (F,F) IS NONDET
+END
+
+test :: =String
+MODES
+	(F) IS NONDET
+END
+
+//INTERNAL PRED
+test(?Str, []) :- test(?Str).   
+
+
+//EXAMPLES
+//test("There should be a class called Foo",[]) 
+ // :- NOT(EXISTS ?C : name(?C,Foo), class(?C)).
+
+//test("The class Foo has methods! Could not find any!")
+//  :- name(?C,Foo),NOT( EXISTS ?m : method(?C,?m) ).
+
+#include "existenceTests.rub"
+#include "fieldAccessTests.rub"
+//#include "inheritanceTests.rub"
+#include "modifierTests.rub"
+//#include "predicateTests.rub"
+#include "specificTests.rub"
+
+
+topQuery("Run Tests", "test(?Tst,?Msg)" ,["?Tst","?Msg"]).  

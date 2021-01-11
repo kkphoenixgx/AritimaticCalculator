@@ -1,0 +1,27 @@
+primitive :: Primitive
+MODES
+   (F) IS MULTI
+END
+
+pasteSnippet("primitive(?Prim)", "?P is a primitive type").
+
+
+primitive(float::Primitive).
+primitive(double::Primitive).
+primitive(boolean::Primitive).
+primitive(byte::Primitive).
+primitive(short::Primitive).
+primitive(int::Primitive).
+primitive(long::Primitive).
+primitive(char::Primitive).
+primitive(void::Primitive).
+
+name(float::Primitive, float).
+name(double::Primitive, double).
+name(boolean::Primitive, boolean).
+name(byte::Primitive, byte).
+name(short::Primitive, short).
+name(int::Primitive, int).
+name(long::Primitive, long).
+name(char::Primitive, char).
+name(void::Primitive, void).

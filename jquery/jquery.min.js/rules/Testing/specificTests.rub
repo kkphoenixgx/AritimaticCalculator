@@ -1,0 +1,48 @@
+//**************************************************************************
+// *** Specific tests for the "Test" project *******************************
+//**************************************************************************
+
+
+//////////////////
+//TypeTest.java
+//////////////////
+test({Missing type: ?name}) :- member(?name,["FinalClass","AbstractClass","PackageClass","PackageInterface","TypeTest","StaticInnerClass","MemberClass","MemberInterface"]),
+		NOT(EXISTS ?C : name(?C, ?name), type(?C)).
+
+test({?TypeName should be an outerType}) :- member(?TypeName,["FinalClass","AbstractClass","PackageClass", "PackageInterface", "TypeTest"]),
+		NOT(EXISTS ?T : name(?T, ?TypeName), outerType(?T)).
+
+test({?TypeName should be a nestedType}) :- member(?TypeName,["StaticInnerClass","MemberClass","MemberInterface", "LocalClass"]),
+		NOT(EXISTS ?T : name(?T, ?TypeName), nestedType(?T)).
+
+test({?TypeName should be a memberType}) :- member(?TypeName,["MemberClass","MemberInterface", "LocalMemberClass"]),
+		NOT(EXISTS ?T : name(?T, ?TypeName), memberType(?T)).
+
+test({?TypeName should be a staticNestedType}) :- member(?TypeName,["StaticInnerClass"]),
+		NOT(EXISTS ?T : name(?T, ?TypeName), staticNestedType(?T)).
+
+test({?TypeName should be a localType}) :- member(?TypeName,["LocalClass"]),
+		NOT(EXISTS ?T : name(?T, ?TypeName), localType(?T)).
+		
+test("fooMethod should declare an anonType") :- NOT( EXISTS ?m, ?AnonT :
+	 name(?m,fooMethod), method(?m),child(?m,?AnonT), anonType(?AnonT)).
+		
+
+//Creations:
+expectedCreations :: String, Integer
+MODES
+	(F,F) IS NONDET
+END
+
+expectedCreations(TypeTest,2).
+expectedCreations(StaticInnerClass, 2).
+expectedCreations(MemberClass, 3).
+test({missing creations for ?TypeName.  Expected ?expected, found ?count}, ?Refs) :-
+		expectedCreations(?TypeName,?expected),
+		name(?T,?TypeName), type(?T),  FINDALL(creator(?T, ?, ?Ref),?Ref,?Refs),
+    length(?Refs,?count), NOT(equals(?count, ?expected)).
+
+
+//Extends
+test({Missing subtype of AbstractClass: PackageClass}) :-  class(?AC), name(?AC, AbstractClass), NOT(EXISTS ?C : name(?C, PackageClass), extends(?C, ?AC)).
+test({Missing anonymous subclass of AbstractClass in FooMethod}) :-  class(?AC), name(?AC, AbstractClass),  NOT(EXISTS ?m,?C : extends(?C, ?AC), anonType(?C), child(?m,?C), method(?m), name(?m, fooMethod)).

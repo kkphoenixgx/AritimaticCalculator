@@ -1,0 +1,151 @@
+body, html{
+    margin: 0%;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: space-between;
+    color: silver;
+    
+}
+
+.textHeader{
+   
+    text-align: center;
+    background-color: rgba(100, 6, 138, 0.534);
+    border-radius: 42px;
+    padding: 6px;
+    width: 100%;
+    margin: 9px;
+
+}
+
+.bg{
+
+    background-image: radial-gradient( rgb(63, 62, 62) , rgb(43, 42, 42), black);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+
+}
+
+.texts{
+
+    font-size: 20px;
+
+}
+
+.texthd{
+    font-family: Arial;
+    text-align: center;
+    font-size: 31px;
+
+}
+
+.textlb2{
+
+    text-align: center;
+
+}
+
+
+.form{
+
+    background-color: rgba(0, 0, 0, 0.445);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px 10px 50px 10px;
+    padding: 21px;
+    position: relative;
+    box-shadow: -6px 7px 32px rgb(75, 70, 70);
+
+}
+
+.spaces{
+
+    position: relative; 
+    color: white;
+    padding: 0px;
+    font-size: 12px;
+    letter-spacing: 3px;
+    margin-bottom: 0px;
+    box-sizing: border-box;
+
+}
+
+#imputHip{
+    color: silver;
+    width: 354px;
+    font-size: 12px;
+    background: transparent;
+    letter-spacing: 4px;
+    border: none;
+    outline: none;
+    margin-bottom: 6px;
+    box-sizing: border-box;
+    border-bottom: 1px solid silver;
+
+}
+
+#imputAdj{
+
+    color: silver;
+    width: 354px;
+    font-size: 12px;
+    background: transparent;
+    letter-spacing: 4px;
+    border: none;
+    outline: none;
+    margin-bottom: 6px;
+    box-sizing: border-box;
+    border-bottom: 1px solid silver;
+
+}
+
+#imputOpos{
+
+    color: silver;
+    width: 354px;
+    font-size: 12px;
+    background: transparent;
+    letter-spacing: 4px;
+    border: none;
+    outline: none;
+    margin-bottom: 6px;
+    box-sizing: border-box;
+    border-bottom: 1px solid silver;
+
+}
+
+#imputAng{
+
+    color: silver;
+    width: 354px;
+    font-size: 12px;
+    background: transparent;
+    letter-spacing: 4px;
+    border: none;
+    outline: none;
+    margin-bottom: 6px;
+    box-sizing: border-box;
+    border-bottom: 1px solid silver;
+
+}
+.bt{
+    
+    color: silver;
+    width: 354px;
+    height: 40px;
+    border: none;
+    outline: none;
+    background: linear-gradient(to right, rgba(255, 0, 0, 0.445), rgba(0, 0, 0, 0.445) );
+    cursor: pointer;
+    border-radius: 31px;
+
+}
+
+
+

@@ -1,0 +1,51 @@
+//this file is included by core_fact_preds.rub
+
+jDocument :: JDocument
+PERSISTENT MODES 
+ (F) IS NONDET
+END
+
+jLine :: JLine
+PERSISTENT MODES
+ (F) IS NONDET
+END
+
+jLine :: JDocument, JLine
+PERSISTENT MODES
+ (B,F) IS NONDET
+ (F,B) IS SEMIDET
+END
+
+jLineNumber :: JLine, Integer
+PERSISTENT MODES
+ (B,F) IS SEMIDET
+ (F,B) IS NONDET
+END
+
+jWord :: JWord
+PERSISTENT MODES
+ (F) IS NONDET
+END
+
+jWord :: JLine, JWord
+PERSISTENT MODES
+ (B,F) IS NONDET
+ (F,B) IS NONDET
+END
+
+jWordNumber :: JWord, Integer
+PERSISTENT MODES
+ (B,F) IS SEMIDET
+ (F,B) IS NONDET
+END
+
+jName :: JElement, String
+PERSISTENT MODES
+  (B,F) IS SEMIDET
+  (F,B) IS NONDET
+END
+
+jElement :: JElement
+MODES (F) IS NONDET END
+
+jElement(?X) :- jDocument(?X);jLine(?X);jWord(?X).

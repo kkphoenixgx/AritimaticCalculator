@@ -1,0 +1,41 @@
+//**************************************************************************
+// ***BASE FACTS, created by FactsGenerator *********************************
+//**************************************************************************
+// *** unary ***** 
+
+//test("no import(?X) facts") :- NOT(EXISTS ?X : import(?X)). 
+test("no cu facts") :- NOT(EXISTS ?X : cu(?X)).  
+test("no package facts") :- NOT(EXISTS ?X : package(?X)). 
+test("no class(?X) facts") :- NOT(EXISTS ?X : class(?X)). 
+test("no interface(?X) facts") :- NOT(EXISTS ?X : interface(?X)). 
+test("no method(?X) facts") :- NOT(EXISTS ?X : method(?X)). 
+test("no initializer(?X) facts") :- NOT(EXISTS ?X : initializer(?X)). 
+test("no constructor(?X) facts") :- NOT(EXISTS ?X : constructor(?X)). 
+test("no field(?X) facts") :- NOT(EXISTS ?X : field(?X)). 
+//test("no  facts") :- NOT(EXISTS ?X : (?X)). 
+
+// *** binary *****
+test("no name(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : name(?X,?Y)). 
+test("no qname(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : qname(?X,?Y)). 
+test("no child(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : child(?X,?Y)). 
+test("no extends(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : extends(?X,?Y)). 
+test("no implements(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : implements(?X,?Y)). 
+test("no throws(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : throws(?X,?Y)). 
+test("no type(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : type(?X,?Y)). 
+test("no modifier(?X,?Y) facts") :- NOT(EXISTS ?X,?Y : modifier(?X,?Y)).
+
+test("no arg(?X,?Y) facts") :- NOT(EXISTS ?X, ?Y : arg(?X,?Y)). 
+test("no returns(?X,?Y) facts") :- NOT(EXISTS ?X, ?Y : returns(?X,?Y)). 
+test("no signature(?X,?Y) facts") :- NOT(EXISTS ?X, ?Y : signature(?X,?Y)). 
+test("no sourceLocation(?X,?Y) facts") :- NOT(EXISTS ?X, ?Y: sourceLocation(?X,?Y)). 
+
+// *** Ternary ********
+test("no methodCall(?X,?Y,?Z) facts") :- NOT(EXISTS ?X, ?Y, ?Z : methodCall(?X,?Y,?Z)). 
+test("no thisCall(?X,?Y,?Z) facts") :- NOT(EXISTS ?X, ?Y, ?Z : thisCall(?X,?Y,?Z)). 
+test("no superCall(?X,?Y,?Z) facts") :- NOT(EXISTS ?X, ?Y, ?Z : superCall(?X,?Y,?Z)). 
+test("no constructorCall(?X,?Y,?Z) facts") :- NOT(EXISTS ?X, ?Y, ?Z : constructorCall(?X,?Y,?Z)). 
+test("no reads(?X,?Y,?Z) facts") :- NOT(EXISTS ?X,?Y ,?Z : reads(?X,?Y,?Z)). 
+test("no writes(?X,?Y,?Z) facts") :- NOT(EXISTS ?X, ?Y ,?Z : writes(?X,?Y,?Z)). 
+
+//test("no ____(?X,?Y,?Z) facts") :- NOT(EXISTS ?X, ?Y, ?Z : ____(?X,?Y,?Z)). 
+

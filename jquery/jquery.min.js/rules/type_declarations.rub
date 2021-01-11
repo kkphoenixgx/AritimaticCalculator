@@ -1,0 +1,65 @@
+//
+// type_declarations.rub
+//
+
+/////////////////////////////////////////////////////////////////
+//This file defines the type hierarchy (shown below) for tyruba's type system.  
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////     
+// Element:
+//     	-Package  
+//     	-CU
+//     	-Field
+//		-Type:
+//     		-Primitive     
+//     		-RefType:
+//     			-Class
+//     			-Interface
+//				-Array
+//    	-Block: 
+//     		-Initializer
+//     		-Callable:
+//    			-Method
+//     			-Constructor      
+/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
+
+
+TYPE Package AS String
+TYPE CU AS String
+TYPE Field AS String
+
+/////////////////////////////////////////////////////////////////
+//		TYPE Class AS String
+//		TYPE Interface AS String
+//	TYPE RefType = Class | Interface
+	TYPE RefType AS String
+	TYPE Primitive AS String
+TYPE Type = RefType | Primitive 
+								//| Array<>
+//TYPE Array<> AS <Type, Integer>
+
+
+/////////////////////////////////////////////////////////////////
+		TYPE Method AS String
+		TYPE Constructor AS String
+	TYPE Callable = Method | Constructor
+	TYPE Initializer AS String
+TYPE Block = Callable | Initializer
+
+////////////////////////
+//Compiler Error/Warnings/Eclipse stuff
+TYPE Error AS String
+TYPE Warning AS String
+TYPE Problem = Error | Warning
+TYPE Task AS String
+TYPE Bookmark AS String
+TYPE Marker = Problem | Task | Bookmark
+////////////////////////
+
+
+/////////////////////////////////////////////////////////////////
+TYPE Element = Package | CU | Field | Type | Block | Marker
+
+//#include "example/types.rub"

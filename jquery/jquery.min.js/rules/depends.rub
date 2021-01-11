@@ -1,0 +1,16 @@
+
+
+// --------------------------------------------------------------------
+// Imports
+// --------------------------------------------------------------------
+	
+menuItem(?O, "Depends" , menu_packageDepends) :- 
+	tyni_type(?O, #org.eclipse.jdt.core.IPackageFragment).
+
+menu_packageDepends(?P1, [?P2, ?T, ?M]) :-
+	refMethod(?P1, ?M),
+	type(?T, method, ?M),
+	package(?P2, type, ?T),
+	NOT(equal(?P1, ?P2)).
+
+	

@@ -1,0 +1,267 @@
+
+/////////////////////////////////////////////////////////////////////////////////////
+//Rules for obtaining a text label.  ?X must be bound!!
+//***currently assumes qualified name strings are used for representing Elements***
+/////////////////////////////////////////////////////////////////////////////////////
+label :: Object, String
+MODES
+	(B,F) REALLY IS SEMIDET
+END
+
+label(?X,?label) :- (Type(?X); Field(?X); CU(?X); Package(?X); Marker(?X)), name(?X,?label).
+
+label(?X,?label) :- Callable(?X), signature(?X,?label).
+
+label(?X,"{...}") :- Initializer(?X), child(?T,?X), Type(?T).
+label(?X, {?N = ...}) :- Initializer(?X), child(?F,?X), Field(?F), name(?F,?N).  
+
+/////////////////////////////////////////////////////////////////////////////////////
+/*qualifiedLabel :: Element, String
+MODES
+	(B,F) REALLY IS SEMIDET
+END
+
+qualifiedLabel(?X,?XStr) :- (type(?X); field(?X); method(?X)),convertToString(?X, ?XStr). */
+
+/////////////////////////////////////////////////////////////////////////////////////
+returnTypeName :: =Callable, String
+MODES
+	(B,F) IS SEMIDET
+END
+
+returnTypeName(?M,?TypeName) :- returns(?M,?Type), name(?Type, ?TypeName). //returns(?M,?T), name(?T,?TypeName).
+
+/////////////////////////////////////////////////////////////////////////////////////
+fieldTypeName :: Field, String
+MODES
+	(B,F) IS SEMIDET
+END
+
+fieldTypeName(?F,?TypeName) :- Field(?F), type(?F,?Type), name(?Type,?TypeName).
+
+/////////////////////////////////////////////////////////////////////////////////////
+//Utility method for determining field/method qnames 	
+/////////////////////////////////////////////////////////////////////////////////////
+//qname(?F,?QName) :- field(?F), child(?T,?F), name(?F, ?FieldName), qname(?T,?TypeQName), 
+//                        string_append(?TypeQName, ?FieldName, ?QName).
+//                       
+//qname(?M,?QName) :- method(?M), child(?T,?M), signature(?M, ?MethSig), qname(?T,?TypeQName), 
+//                      string_append(?TypeQName, ?MethSig, ?QName).
+//qname(?T,?T) :- type(?T).
+
+    
+   
+/////////////////////////////////////////////////////////////////////////////////////
+//Flags used determine the propper adornments to add to the base image
+//The values correspond to those from org.eclipse.jdt.ui.JavaElementImageDescriptor
+adornmentFlags :: Object, =Integer
+MODES
+	(B,F) IS DET
+END 
+
+adornmentFlag :: Element, =Integer
+MODES
+	(B,F) IS NONDET
+END 
+
+
+adornmentFlags(?X, ?num) :-
+  FINDALL(adornmentFlag(?X,?num),?num,?nums),
+    sumList(?nums,?num).
+
+
+
+adornmentFlag(?X,1) :- modifier(?X,abstract).
+adornmentFlag(?X,2) :- modifier(?X,final).
+adornmentFlag(?X,4) :- modifier(?X,synchronized).
+adornmentFlag(?X,8) :- modifier(?X,static).
+adornmentFlag(?X,512) :- constructor(?X).
+  
+//Helper for overrides/implements adornments
+nonAbstractMethod :: Callable
+nonAbstractMethod(?M) :- Method(?M), child(?C,?M), class(?C), NOT(modifier(?M,abstract)).
+  	
+/** 'override' adornment */
+adornmentFlag(?X,128) :- 
+  method(?X), overrides(?X, ?Ridden), nonAbstractMethod(?Ridden).
+ 
+/** 'implements' adornment [only gets applied if the overrides adornment does not]*/
+adornmentFlag(?X,256) :- 
+  method(?X), overrides(?X, ?Ridden),NOT(nonAbstractMethod(?Ridden)), NOT(EXISTS ?Ridden2 : overrides(?X, ?Ridden2), nonAbstractMethod(?Ridden2)).
+	 							
+//Currently unused flags (no facts for them)	
+/** Flag to render the runnable adornment */
+//public final static int RUNNABLE= 		0x010;
+//adornmentFlag(?X,16) :- modifier(?X,runnable).  [not currently used]
+
+
+/** Flag to render the error adornment */
+//public final static int ERROR=			0x040;
+adornmentFlag(?X,64) :- child+(?X,?W),Error(?W).
+
+/** Flag to render the waring adornment */
+//public final static int WARNING=			0x020;
+adornmentFlag(?X,32) :- child+(?X,?W),Warning(?W).
+	
+
+	
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+//Rules for determining a descriptor based on the type and visibility of the given Element
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+baseImageDescriptor :: Element, [String]
+MODES
+	(B,F) REALLY IS SEMIDET
+END
+
+
+methodOrField :: Element, String
+MODES
+	(B,F) REALLY IS SEMIDET
+END
+
+classOrInterface :: Type, String
+MODES
+	(B,F) REALLY IS SEMIDET
+END
+
+innerOrOuter :: Type, String
+MODES
+	(B,F) REALLY IS SEMIDET
+END
+
+visibilityModifier :: Element, String
+MODES
+	(B,F) REALLY IS SEMIDET
+END 
+
+nonDefaultVisibilityModifier :: Element, String
+MODES 
+	(B,F) REALLY IS SEMIDET
+END 
+
+
+interfaceMethodOrField :: Element
+
+
+
+//TYPE baseImageDescriptor
+baseImageDescriptor(?X,[?CorI,?InnerOrOuter,?visib]) :-
+    classOrInterface(?X,?CorI), innerOrOuter(?X,?InnerOrOuter),
+    visibilityModifier(?X,?visib).
+
+//FIELD/METHOD baseImageDescriptor
+baseImageDescriptor(?X,[?MethodOrField,?visib]) :-
+    methodOrField(?X,?MethodOrField), visibilityModifier(?X,?visib).
+
+//PACKAGE baseImageDescriptor
+baseImageDescriptor(?X,[package]) :- Package(?X).
+
+//Compilation Unit baseImageDescriptor
+baseImageDescriptor(?X,[compilationUnit]) :- CU(?X),re_name(?X,/java$/).  
+baseImageDescriptor(?X,[compilationUnitClassFile]) :- CU(?X),re_name(?X,/class$/).
+
+//Initializer baseImageDescriptor
+baseImageDescriptor(?X,[initializer]) :- Initializer(?X).  
+
+
+methodOrField(?X,method) :- Callable(?X).
+methodOrField(?X,field) :- Field(?X).
+
+
+classOrInterface(?X,class) :- class(?X). 
+classOrInterface(?X,interface) :- interface(?X). 
+
+
+innerOrOuter(?X,inner) :- Type(?X), NOT(outerType(?X)).
+innerOrOuter(?X,outer) :- outerType(?X).
+
+
+visibilityModifier(?X,default) :- 
+   Element(?X),NOT(EXISTS ?m : nonDefaultVisibilityModifier(?X,?m)).
+visibilityModifier(?X,?m) :- nonDefaultVisibilityModifier(?X,?m).
+
+
+nonDefaultVisibilityModifier(?X,public) :- modifier(?X,public).
+nonDefaultVisibilityModifier(?X,public) :- interfaceMethodOrField(?X).
+
+nonDefaultVisibilityModifier(?X,private) :- modifier(?X,private).
+nonDefaultVisibilityModifier(?X,protected) :- modifier(?X,protected).
+
+
+
+interfaceMethodOrField(?X):- methodOrField(?X, ?), child(?I,?X), interface(?I).
+									 
+											 
+/////////////////////////////////////////////////////////////////////////////////////
+//Actual images (strings) that will be returned.  The strings correspond to fields in 
+//the class: org.eclipse.jdt.internal.ui.JavaPluginImages or paths to images relative to 
+//the JQuery plugin's images folder.
+/////////////////////////////////////////////////////////////////////////////////////
+//PACKAGES
+descriptorImg :: [String], String
+MODES
+	(B,F) IS SEMIDET
+END
+descriptorImg([compilationUnit], DESC_OBJS_CUNIT).
+descriptorImg([compilationUnitClassFile], DESC_OBJS_CFILE).
+descriptorImg([package], DESC_OBJS_PACKDECL).
+descriptorImg([initializer], DESC_MISC_PRIVATE).
+
+//OUTER CLASSES
+descriptorImg([class,outer,public],DESC_OBJS_CLASS).
+descriptorImg([class,outer,protected],DESC_OBJS_CLASS). // valid case?
+descriptorImg([class,outer,private],DESC_OBJS_CLASS).
+descriptorImg([class,outer,default],DESC_OBJS_CLASS_DEFAULT).
+
+//INNER CLASSES
+descriptorImg([class,inner,public],DESC_OBJS_INNER_CLASS_PUBLIC).
+descriptorImg([class,inner,protected],DESC_OBJS_INNER_CLASS_PROTECTED).
+descriptorImg([class,inner,private],DESC_OBJS_INNER_CLASS_PRIVATE).
+descriptorImg([class,inner,default],DESC_OBJS_INNER_CLASS_DEFAULT).
+
+
+//OUTER INTERFACES
+descriptorImg([interface,outer,public],DESC_OBJS_INTERFACE).
+descriptorImg([interface,outer,protected],DESC_OBJS_INTERFACE). // valid case?
+descriptorImg([interface,outer,private],DESC_OBJS_INTERFACE).
+descriptorImg([interface,outer,default],DESC_OBJS_INTERFACE_DEFAULT).
+
+//INNER INTERFACES
+descriptorImg([interface,inner,public],DESC_OBJS_INNER_INTERFACE_PUBLIC).
+descriptorImg([interface,inner,protected],DESC_OBJS_INNER_INTERFACE_PROTECTED).
+descriptorImg([interface,inner,private],DESC_OBJS_INNER_INTERFACE_PRIVATE).
+descriptorImg([interface,inner,default],DESC_OBJS_INNER_INTERFACE_DEFAULT).
+
+
+//METHODS
+descriptorImg([method,public], DESC_MISC_PUBLIC).
+descriptorImg([method,protected], DESC_MISC_PROTECTED).
+descriptorImg([method,private], DESC_MISC_PRIVATE).
+descriptorImg([method,default], DESC_MISC_DEFAULT).
+
+//FIELDS
+descriptorImg([field,public], DESC_FIELD_PUBLIC).
+descriptorImg([field,protected], DESC_FIELD_PROTECTED).
+descriptorImg([field,private], DESC_FIELD_PRIVATE).
+descriptorImg([field,default], DESC_FIELD_DEFAULT).
+
+/////////////////////////////////////////////////////////////////////////////////////
+//Main rule for obtaining a base image.  ?X must be bound!!
+/////////////////////////////////////////////////////////////////////////////////////
+baseImage :: Object, String
+MODES
+	(B,F) REALLY IS SEMIDET
+END
+
+baseImage(?X, Warning) :- Warning(?X).
+baseImage(?X, Error) :- Error(?X).
+baseImage(?X, Bookmark) :- Bookmark(?X).
+baseImage(?X, Task) :- Task(?X).
+baseImage(?X,?img) :- baseImageDescriptor(?X,?desc), descriptorImg(?desc,?img).
+
+//#include "example/label.rub"

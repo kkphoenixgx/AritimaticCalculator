@@ -1,0 +1,20 @@
+category :: Object, Integer
+MODES
+	(B,F) IS SEMIDET
+END
+
+//category(?X,1) :- project(?X)....  no corresponding elements in rulebase
+category(?X,2) :- package(?X).
+//category(?X,?3) :- folder(?X)... no corresponding elements in rulebase
+category(?X,4) :- cu(?X).
+//category(?X,5) :- classFile(?X).  //not currently used
+//category(?X,6) :- package declaration... no corresponding elements in rulebase  
+//category(?X,7) :- import declaration... no corresponding elements in rulebase
+category(?X,7) :- initializer(?X).
+category(?X,8) :- class(?X).
+category(?X,9) :- interface(?X).
+category(?X,10) :- field(?X).
+category(?X,11) :- method(?X); constructor(?X).
+
+
+

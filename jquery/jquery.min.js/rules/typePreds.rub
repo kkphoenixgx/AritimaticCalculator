@@ -1,0 +1,108 @@
+
+
+//****************************************************************************//
+//  Below are some experimentational predicates for determining the nature of types.
+//  Their definitions are based on the information provided at the following url:
+//
+//  http://www.janeg.ca/scjp/overload/top.html
+//
+//
+//								Types
+//								  ^
+//								/   \
+//						    Outer  Nested
+//                                    ^                 
+//                                   /|\
+//                                  / | \
+//                                 /  |  \
+//                                /   |   \   
+//                               /    |    \
+//							Local  Member  Static Nested
+//                            |
+//                        Anonymous
+//
+//****************************************************************************//
+
+
+////////////////////////////////////////////////////////////////
+//outerType : A top-level type declared inside of a compilation unit.  
+////////////////////////////////////////////////////////////////
+//this predicate is defined in code_facts.rub.  labelProvider depends on it.
+
+////////////////////////////////////////////////////////////////
+//nestedType : A type declared anywhere inside of another type.  
+////////////////////////////////////////////////////////////////
+nestedType :: RefType
+MODES
+	(F) IS NONDET
+END
+
+nestedType(?Type) :- RefType(?Type), child(?Parent,?Type), NOT(cu(?Parent)).  
+
+////////////////////////////////////////////////////////////////
+//memberType:  a non-static type declared directly within another type (an inner type).  
+//each instance of a non-static inner type is associated with an instance of their outer class 
+// NOTE: static inner types are an exception, that is one that can be created from within another class by a call such as Outer.Inner()
+//  There is alot of confusion over the terminology involving 'static nested classes'. They are NOT inner classes! 
+////////////////////////////////////////////////////////////////
+memberType :: RefType
+MODES
+	(F) IS NONDET
+END
+
+memberType(?Type) :-RefType(?Type), NOT(modifier(?Type, static)), child(?ContainingType, ?Type), type(?ContainingType).
+
+////////////////////////////////////////////////////////////////
+// staticNestedType: aka "top level nested type", ie: one that can be created from within another class by a call such as Outer.Inner()
+// NOTE: both classes AND Interfaces can be declared as static inner types. 
+////////////////////////////////////////////////////////////////
+staticNestedType :: RefType
+MODES 
+	(F) IS NONDET
+END
+staticNestedType(?Type):- RefType(?Type), modifier(?Type, static), child(?ContainingType, ?Type), outerType(?ContainingType).
+
+////////////////////////////////////////////////////////////////
+//localType: a type declared within a block of code (within a method or an initialization block)
+////////////////////////////////////////////////////////////////
+localType :: RefType
+MODES
+	(F) IS NONDET
+END
+
+localType(?Type) :- RefType(?Type), child(?Block, ?Type), (Block(?Block)). 
+
+////////////////////////////////////////////////////////////////
+//anonType: a nameless type declared within a block of code (within a method or an initialization block)
+////////////////////////////////////////////////////////////////
+anonType :: RefType
+MODES
+	(F) IS NONDET
+END
+
+anonType(?Type) :- localType(?Type), NOT(EXISTS ?name: name(?Type, ?name)).
+
+/////////////////////////////////////////////////////////////////
+//displays the "path" from some top level type to the given type.
+/////////////////////////////////////////////////////////////////
+//path :: Object, [Object]
+//MODES
+//	(B,F) REALLY IS SEMIDET
+//	(F,F) IS NONDET
+//END
+//path(?Type, [?Type]) :- outerType(?Type).
+//path(?Type, ?Path) :- localType(?Type), child(?Block, ?Type), child(?ContainingType, ?Block), path(?ContainingType, ?Path1), append(?Path1, [?Block,?Type], ?Path).
+//path(?Type, ?Path) :- (memberType(?Type); staticNestedType(?Type)), 
+ //     child(?ContainingType,?Type), path(?ContainingType, ?Path1), append(?Path1, [?Type], ?Path).
+
+//path(?X, ?Path) :- (method(?X); field(?X)), child(?Type, ?X), path(?Type, ?TypePath), append(?TypePath, ?X, ?Path).
+
+
+
+element :: Element
+MODES
+	(F) IS NONDET
+END
+element(?E) :- type(?E); method(?E); initializer(?E); field(?E); constructor(?E).
+pasteSnippet("element(?E)", "?E is an element").
+

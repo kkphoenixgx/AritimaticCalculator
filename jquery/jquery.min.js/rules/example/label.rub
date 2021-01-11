@@ -1,0 +1,18 @@
+//this file is included by LabelProvider.rub
+
+
+label(?X,?L) :- JElement(?X),jName(?X,?L).
+label(?X,{?N: "?L"}) :- JLine(?X),jLineNumber(?X,?N),jName(?X,?L).
+label(?X,{?N: ?L}) :- JWord(?X),jWordNumber(?X,?N),jName(?X,?L).
+
+baseImage(?X,"example/document.JPG") :- JDocument(?X).
+//use different icons if a line contains different numbers of words
+baseImage(?X,"example/line.JPG") :- JLine(?X),COUNTALL(jWord(?X,?Y),?Y,?N),greater(?N,0),greater(5,?N).
+baseImage(?X,"example/line2.JPG") :- JLine(?X),COUNTALL(jWord(?X,?Y),?Y,?N),greater(?N,4),greater(10,?N).
+baseImage(?X,"example/line3.JPG") :-JLine(?X),COUNTALL(jWord(?X,?Y),?Y,?N),greater(?N,9).
+//use different icons if a word is used multiple times in the system
+baseImage(?X,"example/word.JPG") :- JWord(?X),jName(?X,?N),COUNTALL((jWord(?Y),jName(?Y,?N)),?Y,1).
+baseImage(?X,"example/word2.JPG") :- JWord(?X),jName(?X,?N),COUNTALL((jWord(?Y),jName(?Y,?N)),?Y,2).
+baseImage(?X,"example/word3.JPG") :- JWord(?X),jName(?X,?N),COUNTALL((jWord(?Y),jName(?Y,?N)),?Y,?I),greater(?I,2).
+
+

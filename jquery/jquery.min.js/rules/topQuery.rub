@@ -1,0 +1,66 @@
+//=====================================================================
+// Top Level Queries
+//=====================================================================
+topQuery("Package Browser",
+		"package(?P),child(?P,?CU),child(?CU,?T),Type(?T)", 
+		["?P", "?T"]).
+		
+topQuery("Class Creation", 
+		"class(?Cted),package(?Cted,?CtedP),creator(?Cted,?CtorM,?Ref),child(?CtorC,?CtorM),package(?CtorC,?CtorP)",
+		["?CtedP","?Cted", "?CtorP", "?CtorC", "?CtorM" , "?Ref"]).
+
+topQuery("Interface Implementation", 
+		"interface(?Itf),hierarchy(?Itf,?H)",
+		["?Itf","?H"]).		
+
+//An alternative interface implementation browser		
+topQuery("Interface Implementation 2", 
+		"interface(?Itf),subtype+(?Itf,?Cls),class(?Cls),package(?Cls,?CPkg),package(?Itf,?IPkg)",
+		//{interface(??Itf),subtype+(??Itf,??Cls),class(??Cls),
+		 //package(??Cls,??CPkg),package(??Itf,??IPkg)},
+		["?CPkg", "?Cls", "?Itf"]).
+
+topQuery("Abstract Classes", 
+		"class(?Cls),modifier(?Cls,abstract),hierarchy(?Cls,?H)",
+		["?Cls","?H"]).
+		
+topQuery("InstanceOf testing",
+		"instanceOf(?tester,?Tested,?Loc),package(?Tested,?P),child(?Ctester,?tester),package(?Ctester,?Ptester)",
+		["?P","?Tested","?Ptester","?Ctester","?tester","?Loc"]).
+
+//Experimental:Structure Browser: Displays the full java structure of the
+//code, including outer and nested (local, anonymous, member, static nested)
+//types as well as fields and methods of each, sorted by child order starting
+//with packages.  
+
+
+topQuery("Java Structure Browser",
+		"package(?Pkg), viewFromHere(?Pkg, ?View)", 
+		["?Pkg", "?View"]).
+		
+topQuery("Method Browser",
+{method(??M),name(??M,??name),
+child(??C,??M),package(??C,??P)
+//uncomment if you 
+//want to match a regular exp
+//e.g. method names that start with t:
+//,re_match(/^t/,??name)},["?P","?name","?C","?M"]).
+
+topQuery("Abstract Method Browser",
+{method(??M),child(??T,??M),(interface(??T);modifier(??M,abstract)),
+ overrides(??SubM,??M),child(??SubC,??SubM)},
+ ["?T","?M","?SubC","?SubM"]).
+ 
+topQuery("Categories",
+{child(??C,??Element),Type(??C), (
+ tag(??Element,category,??cat) ;
+ tag(??C,category,??cat)
+)}, 
+[ "?cat", "?C", "?Element" ]).
+
+//Compiler Error and Warning queries
+topQuery("Compiler Warnings", "warning(?W),child(?E,?W)",["?W","?E"]).
+topQuery("Compiler Errors", "error(?W),child(?E,?W)",["?W","?E"]).
+topQuery("Bookmarks","bookmark(?B)",["?B"]).
+topQuery("Tasks","task(?T),child(?E,?T),priority(?T,?Pr)",["?Pr","?T","?E"]).
+

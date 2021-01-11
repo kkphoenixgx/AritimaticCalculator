@@ -2,28 +2,63 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Calculator of problems involving triangles-rectangles with if and else</title>
+		<title>Calculator</title>
+		<link rel="stylesheet" href="bootstrap/css/bootstrap-grid.min.css">
 		<link rel="stylesheet" href="css/estilo.css">
 	</head>
-	<body>
+	<body class="bg">
 		<header>
-			<nav></nav>
+			<div class="textHeader">
+				<label class="texthd"  id ="texthd"  for="text">Arithmetic Calculator</label>
+			</div>
+
         </header>
 		
-		<form class="form" method="POST" action="ProdEnglish.php">
+		<form class="form" method="POST" action="ProdPortuguese.php">
+
+
+			<div class="texts">
+					<div >
+							<label  id ="textlb"  for="text"><strong> Fill just what are you going to use and use an x</strong></label> 
+					</div>
+
+					<div class="textlb2"> 
+						<label  id ="textlb"  for="text"> <strong> on the unknown.</strong></label> <br><br>
+					</div>
+			</div>
+				
+						<div class= "spaces">
+
+						<label for="text">Hypotenuse:</label> <br>
+						<input id= "imputHip" type="text" name="Hipotenusa" class = "form-control" id= "Hipotenusa"/> <br>
+
+						<label for="text">Adjacent Cateto:</label> <br> 
+						<input id= "imputAdj" type = "text" name ="adjacente" class = "form-control" id = "adjacente"/><br>
+
+						<label for="text">Opposite Cateto:</label> <br> 
+						<input id= "imputOpos" type="text" name="oposto" class = "form-control" id= "oposto"/> <br>
+
+						<label for="text">Angle:</label> <br> 
+						<input id= "imputAng" type="text" name="angulo" class = "form-control" id= "Angulo"/> 
+					
+						<br><br><br>
+
+						</div>
+
+						<div class = "but">
+							<input class= "bt" type = "submit" value="Send">
+						</div>
+			</form>
+
 			
-			<label for="text">Subscribe what you are going to use and put an x on the incognito</label> <br> <br>
-		hypotenuse: <input type="text" name="hypotenuse" class = "form-control" id= "hypotenuse"/> <br>
-		Adjacent Cateto: <input type = "text" name ="Adjacent" class = "form-control" id = "Adjacent"/><br>
-		Opposite Cateto: <input type="text" name="Opposite" class = "form-control" id= "Opposite"/> <br>
-		Angle: <input type="text" name="Angle" class = "form-control" id= "Angle"/> <br>
-		<input type = "submit" value="Send">
-		</form>
+
+			<a href="https://github.com/kkphoenixgx"><img src="css/png/Screenshot_20190306-005044_Gallery.jpg" class="media-object" width="17" height="25"> </a>
+
 	
 
-		<section></section>
-		</section>
-		
-
+		</form>
+		<script scr=bootstrap/js/bootstrap-grid.min.js ></script>
+        <script scr=jquery/jquery.min.js ></script>
 	</body>
+
 </html>

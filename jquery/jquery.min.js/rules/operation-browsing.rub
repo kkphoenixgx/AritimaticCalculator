@@ -1,0 +1,15 @@
+//Experimental "operational cluster" predicates.  
+
+//operation(op<?sig>) :- signature(?,?sig), NOT(UNIQUE(signature(?x,?sig))).
+op_method(op<?top>,?m) :- method(?m),top_of_cluster(?m,?top).
+
+topQuery("Crosscutting Operations Browser",
+		"operation(?op),op_method(?op,?m),child(?c,?m),inv_heirarchy([?c|?hier]),reverse(?hier,?reih)", 
+		["?op", "?reih", "?c"]).
+
+inh_related(?m1,?m2) :- overrides(?m1,?m2) ; overrides(?m2,?m1).
+
+same_cluster(?m,?m) :- method(?m).
+same_cluster(?m1,?m2) :- same_cluster(?m1,?x),inh_related(?x,?m2).
+
+top_of_cluster(?top) :- method(?top), NOT(overrides(?top,?)).

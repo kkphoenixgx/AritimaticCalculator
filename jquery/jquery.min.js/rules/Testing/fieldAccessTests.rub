@@ -1,0 +1,45 @@
+//See files: AccessTest1.java, AccessTest2.java
+
+//In AccessTest1
+test("AccessTest1 - Missing write: a's initializer should write a") :- 
+	NOT(EXISTS ?C,?a,?I : name(?C, AccessTest1), field(?C,?a), name(?a, a), child(?a,?I), initializer(?I), writes(?I,?a,?)).  
+			
+test("AccessTest1 - Missing read: b's initializer should read a") :- 
+	NOT(EXISTS ?C,?a,?b,?bI : name(?C, AccessTest1), field(?C,?a), name(?a, a), field(?C,?b), name(?b,b), child(?b,?bI), initializer(?bI), reads(?bI,?a,?)).  
+		
+test({AccessTest1 - Missing reads: static initializer should read a 4 times, only found ?count },?Refs) :- 
+	name(?C, AccessTest1), field(?C,?a), name(?a, a), child(?C,?I), initializer(?I), FINDALL(reads(?I, ?a, ?Ref),?Ref,?Refs),
+    length(?Refs,?count), NOT(equals(?count, 4)).
+    
+test({AccessTest1 - Missing writes: static initializer should write a 4 times, only found ?count },?Refs) :- 
+	name(?C, AccessTest1), field(?C,?a), name(?a, a), child(?C,?I), initializer(?I), FINDALL(writes(?I, ?a, ?Ref),?Ref,?Refs),
+   	length(?Refs,?count), NOT(equals(?count, 4)).
+
+
+test({AccessTest1 - Missing reads: accessorMethod should read a 4 times, only found ?count }, ?Refs) :- 
+	name(?C, AccessTest1), field(?C,?a), name(?a, a), method(?C,?M),name(?M,accessorMethod), FINDALL(reads(?M, ?a, ?Ref),?Ref,?Refs),
+	length(?Refs,?count), NOT(equals(?count, 4)).
+    
+test("AccessTest1 - Missing write: accessorMethod should write a") :- 
+	NOT(EXISTS ?C,?a,?M : name(?C, AccessTest1), field(?C,?a), name(?a, a), method(?C,?M), name(?M,accessorMethod),  writes(?M,?a,?)).      
+
+
+test("AccessTest2 - Missing read: foo's initializer should read a") :- 
+	NOT(EXISTS ?C,?a,?foo,?fooI : name(?C, AccessTest2), field(?C,?foo), name(?foo, foo),child(?foo,?fooI), initializer(?fooI), reads(?fooI,?a,?), name(?a,a)).  
+	
+test("AccessTest2 - Missing write: foo's initializer should write a") :- 
+	NOT(EXISTS ?C,?a,?foo,?fooI : name(?C, AccessTest2), field(?C,?foo), name(?foo, foo),child(?foo,?fooI), initializer(?fooI), writes(?fooI,?a,?), name(?a,a)).  
+
+test("AccessTest2 - Missing read: oof's initializer should read b") :- 
+	NOT(EXISTS ?C,?b,?oof,?oofI : name(?C, AccessTest2), field(?C,?oof), name(?oof, oof),child(?oof,?oofI), initializer(?oofI), reads(?oofI,?b,?), name(?b,b)).  
+	
+test("AccessTest2 - Missing write: oof's initializer should write b") :- 
+	NOT(EXISTS ?C,?b,?oof,?oofI : name(?C, AccessTest2), field(?C,?oof), name(?oof, oof),child(?oof,?oofI), initializer(?oofI), writes(?oofI,?b,?), name(?b,b)).  
+
+test("AccessTest2 - Missing read: AccessTest2 constructor should read b") :- 
+	NOT(EXISTS ?C,?b,?M : name(?C, AccessTest2), method(?C,?M), name(?M, AccessTest2), reads(?M,?b,?), name(?b,b)).      
+
+test("AccessTest2 - Missing write: AccessTest2 constructor should write b") :- 
+	NOT(EXISTS ?C,?b,?M : name(?C, AccessTest2), method(?C,?M), name(?M, AccessTest2), writes(?M,?b,?), name(?b,b)).      
+
+

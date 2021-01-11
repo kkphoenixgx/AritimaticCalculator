@@ -1,0 +1,279 @@
+//**************************************************************************
+// *** Derived predicates   (From codefacts.rub)****************************
+//**************************************************************************
+
+test("type(?T) predicate has no results") :- NOT(EXISTS ?T : type(?T)).
+
+
+test("likeThis(?M1,?M1)   predicate has no results") :- NOT(EXISTS  ?M : likeThis(?M,?M)).
+
+test(" predicate has no results") :- NOT(EXISTS   :   ).
+
+test(" predicate has no results") :- NOT(EXISTS   :   ).
+test(" predicate has no results") :- NOT(EXISTS   :   ).
+test(" predicate has no results") :- NOT(EXISTS   :   ).
+test(" predicate has no results") :- NOT(EXISTS   :   ).
+
+
+strongLikeThis :: Object, Object
+MODES
+	(B,F) IS NONDET
+	(F,B) IS NONDET
+END
+
+strongLikeThis(?M1,?M2) :- likeThis(?M1,?M2), 
+	signature(?M1,?S),signature(?M2,?S).
+
+
+////////////////////////////////////////////////////////////////
+child+ :: Object, Object
+MODES
+	(B,F) IS NONDET
+   	(F,B) IS NONDET   
+END
+
+child+(?X,?Y) :- child(?X,?Y).
+child+(?X,?Z) :- child+(?X,?Y),child(?Y,?Z).
+/////////////////////////////////////////////////////////////////
+package :: Object, Object
+MODES
+//	(F,F) IS NONDET
+	(F,B) IS NONDET
+   	(B,F) REALLY IS SEMIDET   
+END
+
+package(?X,?P) :- child+(?P,?X),package(?P).
+pasteSnippet("package(?Element,?Pkg)", "?Element is in package ?Pkg").
+
+/////////////////////////////////////////////////////////////////
+constructor :: Object, Object
+MODES
+	(B,F) IS NONDET
+	(F,B) IS SEMIDET
+END
+
+constructor(?Cls,?Meth) :- 
+	child(?Cls,?Meth), constructor(?Meth).
+pasteSnippet("constructor(?Class,?Method)", "?Class has constructor ?Method").
+	
+
+
+/////////////////////////////////////////////////////////////////
+subtype :: Object, Object
+MODES
+	(F,F) IS NONDET
+END
+
+subtype(?T,?SubT) :- extends(?SubT,?T) ; implements(?SubT,?T).
+
+
+////////////////////////////////////////////////////////////////
+subtype+ :: Object, Object
+MODES
+	(F,F) IS NONDET
+END
+
+subtype+(?T,?SubT) :- subtype(?T,?SubT).
+subtype+(?T,?SubT) :- subtype(?Mid,?SubT), subtype+(?T,?Mid).
+
+////////////////////////////////////////////////////////////////
+subtype* :: Object, Object
+MODES
+	(F,F) IS NONDET
+	(B,B) IS SEMIDET
+END
+
+subtype*(?T,?SubT) :- subtype+(?T,?SubT).
+subtype*(?T,?T) :- type(?T).
+
+////////////////////////////////////////////////////////////////
+field :: Object, Object
+MODES
+	(F,F) IS NONDET
+	(B,F) IS NONDET
+	(F,B) IS SEMIDET
+END
+
+field(?C,?f) :- child(?C,?f),field(?f).
+pasteSnippet("field(?Type,?field)","Type ?Type declares field ?field").
+
+////////////////////////////////////////////////////////////////
+inheritedField :: Object, Object, Object
+MODES
+	(F,F,F) IS NONDET
+	(B,B,F) IS SEMIDET
+END
+
+inheritedField(?C,?f,?Super) :- subtype+(?Super,?C),
+	field(?Super,?f),NOT(modifier(?f,private)).
+
+
+pasteSnippet("inheritedField(?Class,?field,?InhFromType)",
+             "?Class inherits field ?field from type ?InhFromType").	
+
+
+////////////////////////////////////////////////////////////////
+method :: Object, Object
+MODES
+	(F,F) IS NONDET
+	(B,F) IS NONDET
+	(F,B) IS SEMIDET
+END
+
+method(?C,?m) :- child(?C,?m),method(?m).
+pasteSnippet("method(?Type,?method)","Type ?Type declares method ?method").
+
+////////////////////////////////////////////////////////////////
+inheritableMethod :: Object
+MODES
+	(F) IS NONDET
+END
+
+inheritableMethod(?m) :- method(?m), 
+	NOT(modifier(?m,private)),NOT(constructor(?m)).
+
+///////////////////////////////////////////////////////////////////////
+// CALLS
+///////////////////////////////////////////////////////////////////////
+
+calls :: Object, Object, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+	(F,F,B) REALLY IS SEMIDET
+END
+
+calls(?X,?M,?L) :- methodCall(?X,?M,?L); thisCall(?X,?M,?L); superCall(?X,?M,?L); constructorCall(?X,?M,?L).
+
+staticMethod :: Object
+MODES
+	(F) IS NONDET
+END
+staticMethod(?M) :- constructor(?M) ; modifier(?M,static).
+
+
+staticCall :: Object, Object, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+	(F,F,B) REALLY IS SEMIDET
+END
+staticCall(?X,?M,?L) :- thisCall(?X,?M,?L), staticMethod(?M) ;
+                        methodCall(?X,?M,?L), modifier(?M,static).
+
+
+dynamicCall :: Object, Object, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+	(F,F,B) REALLY IS SEMIDET
+END
+dynamicCall(?X,?M,?L) :- methodCall(?X,?M,?L), NOT( modifier(?M,static) ) ;
+                         thisCall(?X,?M,?L), NOT( staticMethod(?M) ).
+
+
+///////////////////////////////////////////////////////////////////////
+// ACCESSES
+///////////////////////////////////////////////////////////////////////
+accesses :: Object, Object, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+END
+
+accesses(?X,?f,?L) :- reads(?X,?f,?L) ; writes(?X,?f,?L).
+
+////////////////////////////////////////////////////////////////
+hasMethod :: Object, Object, Object
+MODES
+	(F,F,F) IS NONDET
+	(B,B,F) REALLY IS SEMIDET
+END
+
+hasMethod(?C,?m,?C) :- 
+	method(?C,?m).
+
+hasMethod(?C,?m,?From) :- 
+	subtype(?Super,?C),hasMethod(?Super,?m,?From),inheritableMethod(?m),
+	NOT( EXISTS ?myOwn : method(?C,?myOwn),strongLikeThis(?m,?myOwn)).
+
+
+////////////////////////////////////////////////////////////////
+inheritedMethod :: Object, Object, Object
+MODES
+	(F,F,F) IS NONDET
+	(B,B,F) IS SEMIDET
+END
+
+inheritedMethod(?C,?m,?Super) :-
+	hasMethod(?C,?m,?Super), NOT(equals(?C,?Super)).
+
+pasteSnippet("inheritedMethod(?Class,?method,?InhFrom)",
+             "?Class inherits method ?method from ?InhFrom").
+
+
+////////////////////////////////////////////////////////////////
+overrides :: Object, Object
+MODES
+	(F,F) IS NONDET
+	(B,F) REALLY IS SEMIDET
+END 
+
+overrides(?M2,?M1) :- // ?M2 overrides ?M1
+	strongLikeThis(?M1,?M2),
+	inheritableMethod(?M1), // cannot override if not inheritable
+	child(?C1,?M1),child(?C2,?M2),
+	subtype+(?C1,?C2).
+	
+////////////////////////////////////////////////////////////////
+
+polyCalls :: Object, Object, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+END
+
+polyCalls(?m1,?m2,?ref) :- calls(?m1,?m2,?ref).
+polyCalls(?m1,?m2,?ref) :- dynamicCall(?m1,?msuper,?ref), overrides(?m2,?msuper).
+
+////////////////////////////////////////////////////////////////
+creator :: Object, Object, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+END
+
+creator(?Cl,?Ctor,?Loc) :- 
+	constructor(?Cl,?Cons),
+	constructorCall(?Ctor,?Cons,?Loc).
+
+////////////////////////////////////////////////////////////////
+inv_hierarchy :: Object, [Object]
+MODES
+	(B,F) IS NONDET
+END
+
+inv_hierarchy(?T,[]) :- NOT(subtype(?,?T)).
+inv_hierarchy(?Sub,[?Super|?R]) :- subtype(?Super,?Sub), inv_hierarchy(?Super,?R).
+
+////////////////////////////////////////////////////////////////
+//implements+: interfaces implmented by ?C or a subtype+ of ?C
+////////////////////////////////////////////////////////////////
+implements+ :: Object, Object
+MODES
+	(F,F) IS NONDET
+END
+
+//implements+: interfaces implmented by ?C or an ancestor of ?C
+implements+(?C, ?I) :- implements(?C, ?I).
+implements+(?Sub, ?I) :- subtype(?Super,?Sub), implements(?Super, ?I).
+
+////////////////////////////////////////////////////////////////
+
+pasteSnippet("re_match(?RegExp,?Str)", "String ?Str matches regular expression ?RegExp").
+
+////////////////////////////////////////////////////////////////
+//outerType : A top-level type declared inside of a compilation unit.  
+////////////////////////////////////////////////////////////////
+outerType :: Object
+MODES
+	(F) IS NONDET
+END
+
+outerType(?Type) :- type(?Type), child(?CU,?Type), cu(?CU).  
+
+   

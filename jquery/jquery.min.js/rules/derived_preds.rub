@@ -1,0 +1,325 @@
+//
+// derived_preds.rub
+// 
+
+//**************************************************************************
+// *** Derived predicates **************************************************
+//**************************************************************************
+type :: Type 
+MODES
+	(F) IS NONDET
+END
+
+type(?T) :- class(?T) ; interface(?T) ; primitive(?T).
+pasteSnippet("type(?Type)","?Type is a class, interface, or primitive").
+
+/////////////////////////////////////////////////////////////////
+//likeThis :: =Callable, =Callable
+likeThis :: Element, Element
+MODES
+	(B,F) IS NONDET
+	(F,B) IS NONDET
+END
+	
+likeThis(?M1,?M2)  
+	:-  name(?M1,?N),
+		name(?M2,?N),
+		NOT( equals(?M1,?M2)).
+//	|  NOT(BOUND(?M1)),
+//		method(?M2), name(?M2,?N),
+//		name(?M1,?N), method(?M1),
+//		NOT( equals(?M1,?M2) ).
+pasteSnippet("likeThis(?E1,?E2)","?E1 has the same name as ?E2 (but is not the same element)").
+
+////////////////////////////////////////////////////////////////
+
+strongLikeThis :: Callable, Callable
+MODES
+	(B,F) IS NONDET
+	(F,B) IS NONDET
+END
+
+strongLikeThis(?M1,?M2) :- signature(?M1,?S),signature(?M2,?S).
+pasteSnippet("strongLikeThis(?M1,?M2)","?M1 has the same signature as ?M2").
+
+
+////////////////////////////////////////////////////////////////
+child+ :: Element, Element
+MODES
+	(B,F) IS NONDET
+   	(F,B) IS NONDET   
+END
+
+child+(?X,?Y) :- child(?X,?Y).
+child+(?X,?Z) :- BOUND ?X ?Z : child(?Y,?Z),child+(?X,?Y)
+               | BOUND ?Z : child(?Y,?Z),child+(?X,?Y)
+               | BOUND ?X : child(?X,?Y),child+(?Y,?Z).
+pasteSnippet("child+(?E1,?E2)", "?E1 is an ancestor of ?E2").
+
+/////////////////////////////////////////////////////////////////
+package :: Element, Package
+MODES
+//	(F,F) IS NONDET
+	(F,B) IS NONDET
+   	(B,F) REALLY IS SEMIDET   
+END
+
+package(?X,?P) :- child+(?P,?X),package(?P).
+pasteSnippet("package(?Element,?Pkg)", "?Element is in package ?Pkg").
+
+/////////////////////////////////////////////////////////////////
+constructor :: RefType, Constructor
+MODES
+	(B,F) IS NONDET
+	(F,B) IS SEMIDET
+END
+
+constructor(?C,?m) :- child(?C,?m),class(?C), constructor(?m).
+pasteSnippet("constructor(?Class,?cons)","Class ?Class declares constructor ?cons").
+
+////////////////////////////////////////////////////////////////
+method :: Type, Method
+MODES
+	(F,F) IS NONDET
+	(B,F) IS NONDET
+	(F,B) IS SEMIDET
+END
+
+method(?C,?m) :- child(?C,?m),type(?C), method(?m).
+pasteSnippet("method(?Type,?method)","Type ?Type declares method ?method").
+
+/////////////////////////////////////////////////////////////////
+subtype :: Type, Type
+MODES
+	(F,F) IS NONDET
+END
+
+subtype(?T,?SubT) :- extends(?SubT,?T) ; implements(?SubT,?T).
+pasteSnippet("subtype(?T1,?T2)", "?T2 is a subtype of ?T1").
+
+
+////////////////////////////////////////////////////////////////
+subtype+ :: Type, Type
+MODES
+	(B,F) IS NONDET
+	(F,B) IS NONDET
+END
+
+subtype+(?T,?SubT) :- BOUND ?T ?SubT : subtype(?Mid,?SubT),subtype+(?T,?Mid)
+                    | BOUND ?SubT : subtype(?Mid,?SubT), subtype+(?T,?Mid)
+                    | BOUND ?T    : subtype(?T,?Mid), subtype+(?Mid,?SubT).
+                    
+subtype+(?T,?SubT) :- subtype(?T,?SubT).
+pasteSnippet("subtype+(?T1,?T2)", "?T2 is in ?T1's type hierarchy").
+
+////////////////////////////////////////////////////////////////
+subtype* :: Type, Type
+MODES
+	(B,F) IS NONDET
+	(F,B) IS NONDET
+END
+
+subtype*(?T,?SubT) :- subtype+(?T,?SubT).
+subtype*(?T,?T) :- type(?T).
+pasteSnippet("subtype*(?T1,?T2)", "?T2 is in ?T1's type hierarchy including itself").
+
+////////////////////////////////////////////////////////////////
+field :: Type, Field
+MODES
+	(F,F) IS NONDET
+	(B,F) IS NONDET
+	(F,B) IS SEMIDET
+END
+
+field(?T,?f) :- child(?T,?f), type(?T), field(?f).
+pasteSnippet("field(?Type,?field)","Type ?Type declares field ?field").
+
+////////////////////////////////////////////////////////////////
+inheritedField :: Type, Field, Type
+MODES
+	(F,F,F) IS NONDET
+	(B,B,F) IS SEMIDET
+END
+
+inheritedField(?C,?f,?Super) :- subtype+(?Super,?C),
+	field(?Super,?f),NOT(modifier(?f,private)).
+
+
+pasteSnippet("inheritedField(?Type,?field,?InhFromType)",
+             "?Type inherits field ?field from type ?InhFromType").	
+
+////////////////////////////////////////////////////////////////
+inheritableMethod :: Method
+MODES
+	(F) IS NONDET
+END
+
+inheritableMethod(?m) :- method(?m), 
+	NOT(modifier(?m,private);modifier(?m,static)).
+pasteSnippet("inheritableMethod(?M)",
+             "?M is an inheritable method").	
+
+///////////////////////////////////////////////////////////////////////
+// CALLS
+///////////////////////////////////////////////////////////////////////
+
+calls :: Block, Callable, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+	(F,F,B) REALLY IS SEMIDET
+END
+
+calls(?X,?M,?L) :- methodCall(?X,?M,?L); thisCall(?X,?M,?L); superCall(?X,?M,?L); constructorCall(?X,?M,?L).
+pasteSnippet("calls(?X,?M,?L)", "?X calls ?M at location ?L").
+
+
+staticCall :: Block, Callable, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+	(F,F,B) REALLY IS SEMIDET
+END
+staticCall(?X,?M,?L) :- constructorCall(?X,?M,?L);
+						thisCall(?X,?M,?L);
+						superCall(?X,?M,?L);
+                        methodCall(?X,?M,?L), modifier(?M,static).
+pasteSnippet("staticCall(?X,?M,?L)", "?X statically calls ?M at location ?L").
+
+
+dynamicCall :: Block, Callable, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+	(F,F,B) REALLY IS SEMIDET
+END
+dynamicCall(?X,?M,?L) :- methodCall(?X,?M,?L), NOT( modifier(?M,static) ).
+pasteSnippet("dynamicCall(?X,?M,?L)", "?X dynamically calls ?M at location ?L").
+                        
+///////////////////////////////////////////////////////////////////////
+// ACCESSES
+///////////////////////////////////////////////////////////////////////
+accesses :: Block, Field, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+END
+
+accesses(?X,?f,?L) :- reads(?X,?f,?L) ; writes(?X,?f,?L).
+pasteSnippet("accesses(?X,?F,?L)", "?X accesses field ?F at location ?L").
+
+////////////////////////////////////////////////////////////////
+hasMethod :: Type, Callable, Type
+MODES
+	(F,F,F) IS NONDET
+	(B,B,F) REALLY IS SEMIDET
+END
+
+hasMethod(?C,?m,?C) :- 
+	method(?C,?m).
+
+hasMethod(?C,?m,?From) :- 
+	subtype(?Super,?C),hasMethod(?Super,?m,?From),inheritableMethod(?m),
+	NOT( EXISTS ?myOwn : method(?C,?myOwn),strongLikeThis(?m,?myOwn)).
+pasteSnippet("hasMethod(?C1,?M,?C2)", "?C1 inherits method ?M from ?C2").	
+
+
+////////////////////////////////////////////////////////////////
+inheritedMethod :: Type, Callable, Type
+MODES
+	(F,F,F) IS NONDET
+	(B,B,F) IS SEMIDET
+END
+
+inheritedMethod(?C,?m,?Super) :-
+	hasMethod(?C,?m,?Super), NOT(equals(?C,?Super)).
+
+pasteSnippet("inheritedMethod(?Class,?method,?InhFrom)",
+             "?Class inherits method ?method from ?InhFrom").
+
+
+////////////////////////////////////////////////////////////////
+overrides :: Callable, Callable
+MODES
+	(F,B) IS NONDET
+	(B,F) IS NONDET
+END 
+
+overrides(?M2,?M1) :- // ?M2 overrides ?M1
+	strongLikeThis(?M1,?M2),
+	inheritableMethod(?M1), // cannot override if not inheritable
+	child(?C1,?M1),child(?C2,?M2),
+	subtype+(?C1,?C2).
+pasteSnippet("overrides(?M2,?M1)", "?M2 overrides ?M1").	
+	
+////////////////////////////////////////////////////////////////
+
+polyCalls :: Block, Callable, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+END
+
+polyCalls(?m1,?m2,?ref) :- calls(?m1,?m2,?ref).
+polyCalls(?m1,?m2,?ref) :- dynamicCall(?m1,?msuper,?ref), overrides(?m2,?msuper).
+pasteSnippet("polyCalls(?m1,?m2,?ref)", "?m1 makes a polymorphic call to ?m2 at ?ref").	
+
+////////////////////////////////////////////////////////////////
+creator :: RefType, Block, ca.ubc.jquery.ast.SourceLocation
+MODES
+	(F,F,F) IS NONDET
+END
+
+creator(?Cl,?Ctor,?Loc) :- 
+	constructor(?Cl,?Cons),
+	constructorCall(?Ctor,?Cons,?Loc).
+
+
+pasteSnippet("creator(?Cted, ?Ctor, ?Loc)", "Class ?Cted is created by method or initializor ?Ctor and source location ?Loc").
+
+////////////////////////////////////////////////////////////////
+//implements+: interfaces implmented by ?C or a subtype+ of ?C
+////////////////////////////////////////////////////////////////
+implements+ :: RefType, RefType
+MODES
+	(F,F) IS NONDET
+	(B,F) IS NONDET
+	(F,B) IS NONDET
+END
+
+//implements+: interfaces implmented by ?C or an ancestor of ?C
+implements+(?C, ?I) :-   class(?C),subtype+(?C,?I),interface(?I).
+pasteSnippet("implements+(?C, ?I)", "interfaces implmented by ?C or an ancestor of ?C").
+////////////////////////////////////////////////////////////////
+
+pasteSnippet("re_match(?RegExp,?Str)", "String ?Str matches regular expression ?RegExp").
+
+////////////////////////////////////////////////////////////////
+//outerType : A top-level type declared inside of a compilation unit.  
+////////////////////////////////////////////////////////////////
+outerType :: Type
+MODES
+	(F) IS NONDET
+END
+
+outerType(?Type) :- type(?Type), child(?CU,?Type), cu(?CU).  
+
+////////////////////////////////////////////////////////////////
+//viewFromHere : a tree representation of all child relationships below given parent element 
+////////////////////////////////////////////////////////////////
+//"viewFrommHere" predicate may also be useful for certain menu items such 
+//as a "Where am I?" or "View children's structure" 
+viewFromHere :: Element, [Element]
+MODES
+	(B,F) IS NONDET
+END
+
+viewFromHere(?X,[?Child | ?ChildsView]) :- child(?X,?Child), viewFromHere(?Child,?ChildsView).
+viewFromHere(?X, []) :- Element(?X), NOT(child(?X,?)).
+						//NOT(exists ?Y: child(?X,?Y)).
+
+pasteSnippet("viewFromHere(?X,?ViewJavaStructure)", "?ViewJavaStructure is a tree representation of all child relationships below parent element ?X"). 
+
+/////////////////////////////////////////////////////////////////
+// A contraction of the frequently used combination of name and re_match
+/////////////////////////////////////////////////////////////////
+
+re_name :: Element, =org.apache.regexp.RE
+MODES (F,B) IS NONDET END
+re_name(?x,?regexp) :- name(?x,?name),re_match(?regexp,?name).
+pasteSnippet("re_name(?X,/regexp/)", "?X has a name that matches regexp"). 

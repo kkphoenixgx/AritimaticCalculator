@@ -1,0 +1,57 @@
+//see file ModifierTest.java
+
+//public: types, methods, fields
+test("no public modifier facts") :- NOT(EXISTS ?X : modifier(?X, public)). 
+test("class ModifierTest should have public modifier") :- NOT(EXISTS ?T : name(?T, ModifierTest), class(?T), modifier(?T,public)).
+test("method abstractMethod should have public modifier") :- NOT(EXISTS ?M : name(?M, abstractMethod), method(?M), modifier(?M,public)).
+test("field publicField should have public modifier") :- NOT(EXISTS ?M : name(?M, publicField), field(?M), modifier(?M,public)).
+
+//private: types, methods, fields
+test("no private modifier facts") :- NOT(EXISTS ?X : modifier(?X, private)). 
+test("class finalClass should have private modifier") :- NOT(EXISTS ?T : name(?T, finalClass), class(?T), modifier(?T,private)).
+test("method privateMethod should have private modifier") :- NOT(EXISTS ?M : name(?M, privateMethod), method(?M), modifier(?M,private)).
+test("field privateField should have private modifier") :- NOT(EXISTS ?M : name(?M, privateField), field(?M), modifier(?M,private)).
+
+//protected: types, methods, fields
+test("no protected modifier facts") :- NOT(EXISTS ?X : modifier(?X, protected)). 
+test("class protectedClass should have protected modifier") :- NOT(EXISTS ?T : name(?T, protectedClass), class(?T), modifier(?T,protected)).
+test("method protectedMethod should have protected modifier") :- NOT(EXISTS ?M : name(?M, protectedMethod), method(?M), modifier(?M,protected)).
+test("field protectedField should have protected modifier") :- NOT(EXISTS ?M : name(?M, protectedField), field(?M), modifier(?M,protected)).
+
+//static: types, methods, fields, initializers
+test("no static modifier facts") :- NOT(EXISTS ?X : modifier(?X, static)). 
+test("class staticClass should have static modifier") :- NOT(EXISTS ?T : name(?T, staticClass), class(?T), modifier(?T,static)).
+test("method staticMethod should have static modifier") :- NOT(EXISTS ?M : name(?M, staticMethod), method(?M), modifier(?M,static)).
+test("field staticField should have static modifier") :- NOT(EXISTS ?M : name(?M, staticField), field(?M), modifier(?M,static)).
+test("class ModifierTest's initializer should have static modifier") :- NOT(EXISTS ?C,?I : name(?C,ModifierTest), class(?C), child(?C,?I), initializer(?I), modifier(?I, static)).
+
+//abstract: types, methods
+test("no abstract modifier facts") :- NOT(EXISTS ?X : modifier(?X,abstract)). 
+test("class ModifierTest should have abstract modifier") :- NOT(EXISTS ?T : name(?T, ModifierTest), class(?T), modifier(?T,abstract)).
+test("method abstractMethod should have abstract modifier") :- NOT(EXISTS ?M : name(?M, abstractMethod), method(?M), modifier(?M,abstract)).
+
+//final: class,fields,methods
+test("no final modifier facts") :- NOT(EXISTS ?X : modifier(?X, final)). 
+test("class finalClass should have final modifier") :- NOT(EXISTS ?T : name(?T, finalClass), class(?T), modifier(?T,final)).
+test("method privateMethod should have final modifier") :- NOT(EXISTS ?M : name(?M, privateMethod), method(?M), modifier(?M,final)).
+test("field privateField should have final modifier") :- NOT(EXISTS ?M : name(?M, privateField), field(?M), modifier(?M,final)).
+
+//transient: variables
+test("no transient modifier facts") :- NOT(EXISTS ?X : modifier(?X, transient)). 
+test("field foo should have transient modifier") :- NOT(EXISTS ?M : name(?M, foo), field(?M), modifier(?M,transient)).
+
+//volatile: variables
+test("no volatile modifier facts") :- NOT(EXISTS ?X : modifier(?X, volatile)). 
+test("field foo should have volatile modifier") :- NOT(EXISTS ?M : name(?M, foo), field(?M), modifier(?M,volatile)).
+
+//strictfp: methods
+test("no strictfp modifier facts") :- NOT(EXISTS ?X : modifier(?X, strictfp)). 
+test("method strictfpMethod should have strictfp modifier") :- NOT(EXISTS ?M : name(?M, strictfpMethod), method(?M), modifier(?M,strictfp)).
+		
+//synchronized: methods
+test("no synchronized modifier facts") :- NOT(EXISTS ?X : modifier(?X, synchronized)). 
+test("method synchronizedMethod should have synchronized modifier") :- NOT(EXISTS ?M : name(?M, synchronizedMethod), method(?M), modifier(?M,synchronized)).
+	
+//native: methods  
+test("no native modifier facts") :- NOT(EXISTS ?X : modifier(?X, native)). 
+test("method nativeMethod should have native modifier") :- NOT(EXISTS ?M : name(?M, nativeMethod), method(?M), modifier(?M,native)).
