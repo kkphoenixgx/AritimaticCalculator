@@ -14,12 +14,12 @@ here on git hub posting my daily exercises on php, html, css, js, java, I have p
 
 Português(Portuguese): 
 
-  Hi, esse é meu primeiro projeto no git hub e no mundo da programação, I gostaria que toda a comunidade e todos pudessem me ajudar na arte de 
-arte da Programação e ser melhor poragramando, vou fazer codigos em ingles e portugues postando meu dia a dia na programação aqui, eu estou 
-aceitando novos ponos de vista e criticas construtivas sobre meu trabalho, buscando sempre melhorar.
+  Hi, esse é meu primeiro projeto no git hub e no mundo da programação, Eu gostaria que toda a comunidade e todos pudessem me ajudar na  
+arte da Programação e ser melhor poragramando, vou fazer códigos em ingles e português, postando meu dia a dia na programação aqui, eu estou 
+aceitando novos ponos de vista e críticas construtivas sobre meu trabalho, buscando sempre melhorar.
   Meu professor me desafiou a resolver um problema com uma calculadora, então criei uma só com if e else kkkkkkkkkkkk, mas de qualquer forma
 vai ser bom para todos perceberem miha forma de pensar e resolver problemas.
-  Eu moro aqui no Brasil mesmo, no Rio e tô fazendo um curso de inglês, ccaa, e achoq ue tô conseguindo falar com nativos sem problemas, então
+  Eu moro aqui no Brasil mesmo, no Rio, e tô fazendo um curso de inglês, ccaa, e acho que tô conseguindo falar com nativos sem problemas, então
 vou fazer codigos para as duas linguagens, fazendo elas todas em pt-br depois passando para o ingles para atigir todos os mercados de trabalho.
   Tenho 15 anos e vou ser ativo aqui na plataforma do git hub postando meus exercicios diarios em pragamação, com php, html, css, js, java e 
 tenho planos de aprender mysql, unit e todas as linguagens que eu conseguir degustar nesse mundo.
